@@ -115,7 +115,7 @@ Respostas:
 | Status | Descricao |
 |--------|-----------|
 | `201` | Cadastro realizado com sucesso |
-| `409` | CPF ja cadastrado |
+| `409` | CPF ou e-mail ja cadastrado |
 | `422` | Dados invalidos |
 | `500` | Erro interno |
 

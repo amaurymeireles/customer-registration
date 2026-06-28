@@ -17,3 +17,6 @@ CREATE TABLE "clients" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "clients_cpf_key" ON "clients"("cpf");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "clients_email_key" ON "clients"("email");

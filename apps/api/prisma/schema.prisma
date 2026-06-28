@@ -24,7 +24,7 @@ model Client {
   id             String       @id @default(cuid())
   fullName       String
   cpf            String       @unique
-  email          String
+  email          String       @unique
   favoriteColor  RainbowColor
   observations   String?
   createdAt      DateTime     @default(now())

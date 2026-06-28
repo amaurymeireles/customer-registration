@@ -4,6 +4,11 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateClientDto } from "./dto/create-client.dto";
 import { normalizeCPF } from "./utils/cpf";
 
+const DUPLICATE_CPF_MESSAGE =
+  "Este CPF ja esta cadastrado.";
+const DUPLICATE_EMAIL_MESSAGE =
+  "Este e-mail ja esta cadastrado.";
+
 @Injectable()
 export class ClientsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -21,14 +26,17 @@ export class ClientsService {
 
   async create(createClientDto: CreateClientDto) {
     const normalizedCPF = normalizeCPF(createClientDto.cpf);
+    const normalizedEmail = createClientDto.email.trim().toLowerCase();
 
-    const existingClient = await this.prisma.client.findUnique({
-      where: { cpf: normalizedCPF },
+    const existingClient = await this.prisma.client.findFirst({
+      where: {
+        OR: [{ cpf: normalizedCPF }, { email: normalizedEmail }],
+      },
     });
 
     if (existingClient) {
       throw new ConflictException(
-        "Este CPF ja esta cadastrado. Cada cliente pode se cadastrar apenas uma vez.",
+        existingClient.cpf === normalizedCPF ? DUPLICATE_CPF_MESSAGE : DUPLICATE_EMAIL_MESSAGE,
       );
     }
 
@@ -39,7 +47,7 @@ export class ClientsService {
         data: {
           fullName: createClientDto.fullName.trim(),
           cpf: normalizedCPF,
-          email: createClientDto.email.trim().toLowerCase(),
+          email: normalizedEmail,
           favoriteColor: createClientDto.favoriteColor,
           observations: createClientDto.observations?.trim() || null,
         },
@@ -49,8 +57,10 @@ export class ClientsService {
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2002"
       ) {
+        const target = Array.isArray(error.meta?.target) ? error.meta.target : [];
+
         throw new ConflictException(
-          "Este CPF ja esta cadastrado. Cada cliente pode se cadastrar apenas uma vez.",
+          target.includes("email") ? DUPLICATE_EMAIL_MESSAGE : DUPLICATE_CPF_MESSAGE,
         );
       }
 
