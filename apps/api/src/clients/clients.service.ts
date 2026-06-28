@@ -1,5 +1,5 @@
 import { ConflictException, Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
+import { Client, Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateClientDto } from "./dto/create-client.dto";
 import { normalizeCPF } from "../common/utils/cpf";
@@ -7,6 +7,17 @@ import { normalizeCPF } from "../common/utils/cpf";
 @Injectable()
 export class ClientsService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async findAll() {
+    const clients = await this.prisma.client.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+
+    return {
+      success: true,
+      data: clients.map((client) => this.serializeClient(client)),
+    };
+  }
 
   async create(createClientDto: CreateClientDto) {
     const normalizedCPF = normalizeCPF(createClientDto.cpf);
@@ -49,15 +60,19 @@ export class ClientsService {
     return {
       success: true,
       message: "Cadastro realizado com sucesso!",
-      data: {
-        id: client.id,
-        fullName: client.fullName,
-        cpf: client.cpf,
-        email: client.email,
-        favoriteColor: client.favoriteColor,
-        observations: client.observations ?? undefined,
-        createdAt: client.createdAt.toISOString(),
-      },
+      data: this.serializeClient(client),
+    };
+  }
+
+  private serializeClient(client: Client) {
+    return {
+      id: client.id,
+      fullName: client.fullName,
+      cpf: client.cpf,
+      email: client.email,
+      favoriteColor: client.favoriteColor,
+      observations: client.observations ?? undefined,
+      createdAt: client.createdAt.toISOString(),
     };
   }
 }

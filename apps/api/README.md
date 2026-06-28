@@ -69,6 +69,29 @@ docker compose up db -d
 
 Healthcheck simples da aplicacao.
 
+### `GET /api/clients`
+
+Lista os clientes cadastrados, do mais recente para o mais antigo.
+
+Resposta `200`:
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "clx123...",
+      "fullName": "Maria da Silva",
+      "cpf": "12345678909",
+      "email": "maria@exemplo.com",
+      "favoriteColor": "VERDE",
+      "observations": "Texto opcional",
+      "createdAt": "2026-06-28T18:30:00.000Z"
+    }
+  ]
+}
+```
+
 ### `POST /api/clients`
 
 Registra um novo cliente.
