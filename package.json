@@ -1,0 +1,22 @@
+{
+  "name": "customer-registration",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Customer registration code challenge",
+  "author": "Amaury Meireles",
+  "license": "MIT",
+  "packageManager": "pnpm@10.12.3",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev:api": "pnpm --filter ./apps/api dev",
+    "dev:web": "pnpm --filter ./apps/web dev",
+    "build:api": "pnpm --filter ./apps/api build",
+    "build:web": "pnpm --filter ./apps/web build",
+    "db:generate": "pnpm --filter ./apps/api db:generate",
+    "db:migrate": "pnpm --filter ./apps/api db:migrate",
+    "db:push": "pnpm --filter ./apps/api db:push",
+    "db:studio": "pnpm --filter ./apps/api db:studio"
+  }
+}
