@@ -64,6 +64,29 @@ pnpm --filter ./apps/web start
 
 Esse comando serve a pasta `out/` com `python3 -m http.server`.
 
+### Deploy em imagem unica
+
+O deploy final pode usar uma unica imagem Docker na raiz do repositorio. Ela:
+
+- builda o frontend em `apps/web/out`
+- builda a API em `apps/api/dist`
+- copia o frontend estatico para dentro da imagem da API
+- serve frontend e backend no mesmo processo Node/Nest
+
+Build:
+
+```bash
+docker build -t customer-registration .
+```
+
+Run:
+
+```bash
+docker run --rm -p 3000:3000 \
+  -e DATABASE_URL="postgresql://postgres:postgres@HOST:5432/customer_registration" \
+  customer-registration
+```
+
 ## Estrutura principal
 
 ```text
@@ -83,4 +106,4 @@ src/
 ## Observacoes
 
 - A API precisa estar em execucao e acessivel pela URL configurada em `NEXT_PUBLIC_API_URL`
-- O frontend usa `http://localhost:3000` por padrao quando a variavel nao e informada
+- O frontend usa a mesma origem por padrao quando `NEXT_PUBLIC_API_URL` nao e informada

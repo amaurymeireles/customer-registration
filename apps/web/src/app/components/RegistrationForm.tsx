@@ -20,7 +20,7 @@ interface FieldErrors {
 }
 
 type SubmitStatus = "idle" | "loading" | "success" | "error";
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "";
 const CLIENTS_ENDPOINT = `${API_BASE_URL}/api/clients`;
 
 const INITIAL_FORM: FormState = {
