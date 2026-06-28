@@ -1,12 +1,12 @@
 # Cadastro de Clientes
 
-Aplicacao frontend-only em Next.js para cadastro de clientes. O formulario valida os dados no navegador e salva os registros localmente com `localStorage`, sem API, banco de dados ou Docker.
+Aplicacao web em Next.js para cadastro de clientes. O formulario valida os dados no navegador, envia os registros para a API e consulta os cadastros salvos no banco.
 
 ## O que mudou
 
-- O repo agora contem apenas a interface web
-- O envio do formulario acontece no navegador
-- A unicidade por CPF vale apenas no navegador atual
+- O envio do formulario acontece via `POST /api/clients`
+- A listagem usa `GET /api/clients`
+- A unicidade de CPF e e-mail e garantida pela API e pelo banco
 - O build gera arquivos estaticos em `out/`
 
 ## Stack
@@ -20,8 +20,8 @@ Aplicacao frontend-only em Next.js para cadastro de clientes. O formulario valid
 - Cadastro com nome completo, CPF, e-mail, cor favorita e observacoes
 - Validacao de CPF no cliente
 - Mascara automatica de CPF
-- Persistencia local no navegador
-- Acao para limpar os cadastros locais durante testes
+- Integracao com a API de cadastro
+- Listagem resumida dos ultimos cadastros
 
 ## Como rodar
 
@@ -29,6 +29,13 @@ Aplicacao frontend-only em Next.js para cadastro de clientes. O formulario valid
 
 ```bash
 pnpm install
+NEXT_PUBLIC_API_URL=http://localhost:3000 pnpm dev:web
+```
+
+Ou, se voce preferir configurar em arquivo dentro de `apps/web`:
+
+```bash
+cp .env.example .env.local
 pnpm dev:web
 ```
 
@@ -75,6 +82,5 @@ src/
 
 ## Observacoes
 
-- Os dados ficam salvos apenas no navegador/dispositivo usado no cadastro
-- Limpar o armazenamento do navegador remove os registros
-- Se voce quiser integrar uma API depois, o ponto principal a adaptar e `src/app/components/RegistrationForm.tsx`
+- A API precisa estar em execucao e acessivel pela URL configurada em `NEXT_PUBLIC_API_URL`
+- O frontend usa `http://localhost:3000` por padrao quando a variavel nao e informada

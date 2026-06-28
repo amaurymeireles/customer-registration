@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { RAINBOW_COLORS, RainbowColor, RegisteredClient } from "@/types";
+import { ApiResponse, RAINBOW_COLORS, RainbowColor, RegisteredClient } from "@/types";
 import { formatCPF, isValidCPF } from "@/app/lib/cpf";
 
 interface FormState {
@@ -20,7 +20,8 @@ interface FieldErrors {
 }
 
 type SubmitStatus = "idle" | "loading" | "success" | "error";
-const STORAGE_KEY = "client-registration:entries";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+const CLIENTS_ENDPOINT = `${API_BASE_URL}/api/clients`;
 
 const INITIAL_FORM: FormState = {
   fullName: "",
@@ -30,29 +31,42 @@ const INITIAL_FORM: FormState = {
   observations: "",
 };
 
-function readRegistrations(): RegisteredClient[] {
-  if (typeof window === "undefined") {
-    return [];
-  }
-
-  try {
-    const rawEntries = window.localStorage.getItem(STORAGE_KEY);
-    return rawEntries ? (JSON.parse(rawEntries) as RegisteredClient[]) : [];
-  } catch {
-    return [];
-  }
-}
-
 export default function RegistrationForm() {
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [status, setStatus] = useState<SubmitStatus>("idle");
   const [feedbackMessage, setFeedbackMessage] = useState("");
-  const [savedCount, setSavedCount] = useState(0);
+  const [registrations, setRegistrations] = useState<RegisteredClient[]>([]);
+  const [isLoadingRegistrations, setIsLoadingRegistrations] = useState(true);
 
   useEffect(() => {
-    setSavedCount(readRegistrations().length);
+    void loadRegistrations();
   }, []);
+
+  const loadRegistrations = async () => {
+    setIsLoadingRegistrations(true);
+
+    try {
+      const response = await fetch(CLIENTS_ENDPOINT, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      const payload = (await response.json()) as ApiResponse<RegisteredClient[]>;
+
+      if (!response.ok || !payload.success) {
+        throw new Error(payload.message || "Nao foi possivel carregar os cadastros.");
+      }
+
+      setRegistrations(payload.data);
+    } catch {
+      setRegistrations([]);
+    } finally {
+      setIsLoadingRegistrations(false);
+    }
+  };
 
   const validate = (): boolean => {
     const next: FieldErrors = {};
@@ -78,59 +92,50 @@ export default function RegistrationForm() {
     setForm((prev) => ({ ...prev, cpf: formatCPF(value) }));
   };
 
-  const handleClearRegistrations = () => {
-    window.localStorage.removeItem(STORAGE_KEY);
-    setSavedCount(0);
-    setStatus("idle");
-    setFeedbackMessage("");
-  };
-
   const handleReturnToForm = () => {
     setStatus("idle");
     setFeedbackMessage("");
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validate()) return;
 
     setStatus("loading");
     setFeedbackMessage("");
 
     try {
-      const registrations = readRegistrations();
-      const normalizedCPF = form.cpf.replace(/\D/g, "");
-
-      if (registrations.some((client) => client.cpf === normalizedCPF)) {
-        setStatus("error");
-        setFeedbackMessage(
-          "Este CPF ja esta salvo neste navegador. Limpe os cadastros locais para testar novamente."
-        );
-      } else {
-        const nextRegistration: RegisteredClient = {
-          id: crypto.randomUUID(),
+      const response = await fetch(CLIENTS_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
           fullName: form.fullName.trim(),
-          cpf: normalizedCPF,
+          cpf: form.cpf,
           email: form.email.trim(),
-          favoriteColor: form.favoriteColor as RainbowColor,
+          favoriteColor: form.favoriteColor,
           observations: form.observations.trim() || undefined,
-          createdAt: new Date().toISOString(),
-        };
+        }),
+      });
 
-        window.localStorage.setItem(
-          STORAGE_KEY,
-          JSON.stringify([nextRegistration, ...registrations])
-        );
+      const payload = (await response.json()) as ApiResponse<RegisteredClient>;
 
-        setSavedCount(registrations.length + 1);
-        setStatus("success");
-        setFeedbackMessage("Cadastro salvo com sucesso neste navegador.");
-        setForm(INITIAL_FORM);
-        setErrors({});
+      if (!response.ok || !payload.success) {
+        throw new Error(payload.message || "Nao foi possivel salvar os dados.");
       }
-    } catch {
+
+      setRegistrations((prev) => [payload.data, ...prev]);
+      setStatus("success");
+      setFeedbackMessage(payload.message || "Cadastro salvo com sucesso.");
+      setForm(INITIAL_FORM);
+      setErrors({});
+    } catch (error) {
       setStatus("error");
       setFeedbackMessage(
-        "Nao foi possivel salvar os dados localmente. Verifique as permissoes do navegador e tente novamente."
+        error instanceof Error
+          ? error.message
+          : "Nao foi possivel enviar os dados para a API. Verifique se ela esta em execucao e tente novamente."
       );
     }
   };
@@ -155,7 +160,7 @@ export default function RegistrationForm() {
         <h2 className="success-title">Cadastro realizado!</h2>
         <p className="success-message">{feedbackMessage}</p>
         <p className="success-sub">
-          Os dados ficaram armazenados localmente neste dispositivo, sem API ou banco de dados.
+          Os dados foram enviados para a API e persistidos no banco de dados.
         </p>
         <button type="button" className="secondary-btn" onClick={handleReturnToForm}>
           Fazer outro cadastro
@@ -174,16 +179,18 @@ export default function RegistrationForm() {
         </div>
         <h1 className="form-title">Cadastro de Cliente</h1>
         <p className="form-subtitle">
-          Preencha seus dados abaixo. Nesta versao frontend-only, os cadastros ficam salvos apenas neste navegador.
+          Preencha seus dados abaixo. Esta interface envia o cadastro para a API e carrega os registros salvos no banco.
         </p>
         <div className="storage-note">
           <p>
-            {savedCount > 0
-              ? `${savedCount} cadastro(s) salvo(s) localmente neste navegador.`
-              : "Nenhum cadastro salvo localmente ainda."}
+            {isLoadingRegistrations
+              ? "Carregando cadastros da API..."
+              : registrations.length > 0
+                ? `${registrations.length} cadastro(s) carregado(s) da API.`
+                : "Nenhum cadastro encontrado na API ainda."}
           </p>
-          <button type="button" className="storage-action" onClick={handleClearRegistrations}>
-            Limpar cadastros locais
+          <button type="button" className="storage-action" onClick={() => void loadRegistrations()}>
+            Atualizar lista
           </button>
         </div>
       </div>
@@ -362,6 +369,26 @@ export default function RegistrationForm() {
         <p className="required-note">
           <span className="required">*</span> Campos obrigatórios
         </p>
+
+        {registrations.length > 0 && (
+          <div className="registrations-list">
+            <div className="registrations-list__header">
+              <h2>Ultimos cadastros</h2>
+              <span>{registrations.length} registro(s)</span>
+            </div>
+            <ul className="registrations-list__items">
+              {registrations.slice(0, 5).map((client) => (
+                <li key={client.id} className="registrations-list__item">
+                  <div>
+                    <strong>{client.fullName}</strong>
+                    <p>{client.email}</p>
+                  </div>
+                  <span>{new Date(client.createdAt).toLocaleDateString("pt-BR")}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );

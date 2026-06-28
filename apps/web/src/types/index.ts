@@ -35,3 +35,9 @@ export interface RegisteredClient extends ClientFormData {
   id: string;
   createdAt: string;
 }
+
+export interface ApiResponse<T> {
+  success: boolean;
+  message?: string;
+  data: T;
+}
