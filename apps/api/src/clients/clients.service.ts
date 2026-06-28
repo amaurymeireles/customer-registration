@@ -2,7 +2,7 @@ import { ConflictException, Injectable } from "@nestjs/common";
 import { Client, Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateClientDto } from "./dto/create-client.dto";
-import { normalizeCPF } from "../common/utils/cpf";
+import { normalizeCPF } from "./utils/cpf";
 
 @Injectable()
 export class ClientsService {

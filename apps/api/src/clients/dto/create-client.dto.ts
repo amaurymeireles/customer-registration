@@ -8,7 +8,7 @@ import {
   MaxLength,
   MinLength,
 } from "class-validator";
-import { IsCPF } from "../../common/validators/is-cpf.validator";
+import { IsCPF } from "../validators/is-cpf.validator";
 
 export class CreateClientDto {
   @IsString()
