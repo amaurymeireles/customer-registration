@@ -16,7 +16,6 @@
     "build:web": "pnpm --filter ./apps/web build",
     "db:generate": "pnpm --filter ./apps/api db:generate",
     "db:migrate": "pnpm --filter ./apps/api db:migrate",
-    "db:push": "pnpm --filter ./apps/api db:push",
-    "db:studio": "pnpm --filter ./apps/api db:studio"
+    "test:api": "pnpm --filter ./apps/api test"
   }
 }
