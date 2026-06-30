@@ -20,7 +20,8 @@
     "lint:web": "pnpm --filter ./apps/web lint",
     "lint-staged": "lint-staged",
     "prepare": "husky",
-    "test:api": "pnpm --filter ./apps/api test"
+    "test:api": "pnpm --filter ./apps/api test",
+    "test:web": "pnpm --filter ./apps/web test"
   },
   "devDependencies": {
     "husky": "^9.1.7",
