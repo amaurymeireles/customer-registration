@@ -1,5 +1,6 @@
 "use client";
 
+import ApiError from "./ApiError";
 import { useRegistrationForm } from "@/app/hooks/useRegistrationForm";
 import { RAINBOW_COLORS } from "@/types";
 
@@ -190,15 +191,7 @@ export default function RegistrationForm() {
         </div>
 
         {/* API error */}
-        {status === "error" && (
-          <div className="api-error" role="alert">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <circle cx="8" cy="8" r="7.5" stroke="#dc2626" />
-              <path d="M8 4v4M8 11v1" stroke="#dc2626" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-            {feedbackMessage}
-          </div>
-        )}
+        {status === "error" && <ApiError message={feedbackMessage} />}
 
         <button
           type="button"
