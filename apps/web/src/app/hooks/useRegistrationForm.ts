@@ -1,7 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { formatCPF, isValidCPF } from "@/app/lib/cpf";
+import { formatCPF } from "@/app/lib/cpf";
+import {
+  getCpfError,
+  getEmailError,
+  getFavoriteColorError,
+  getFullNameError,
+} from "@/app/hooks/registrationFormValidation";
 import {
   ApiResponse,
   RAINBOW_COLORS,
@@ -45,19 +51,15 @@ export function useRegistrationForm() {
 
   const validate = () => {
     const next: FieldErrors = {};
+    const fullNameError = getFullNameError(form.fullName);
+    const cpfError = getCpfError(form.cpf);
+    const emailError = getEmailError(form.email);
+    const favoriteColorError = getFavoriteColorError(form.favoriteColor);
 
-    if (!form.fullName.trim() || form.fullName.trim().length < 3) {
-      next.fullName = "Informe o nome completo (mín. 3 caracteres).";
-    }
-    if (!isValidCPF(form.cpf)) {
-      next.cpf = "CPF inválido. Verifique o número digitado.";
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      next.email = "Informe um e-mail válido.";
-    }
-    if (!form.favoriteColor) {
-      next.favoriteColor = "Selecione uma cor favorita.";
-    }
+    if (fullNameError) next.fullName = fullNameError;
+    if (cpfError) next.cpf = cpfError;
+    if (emailError) next.email = emailError;
+    if (favoriteColorError) next.favoriteColor = favoriteColorError;
 
     setErrors(next);
     return Object.keys(next).length === 0;
