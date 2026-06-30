@@ -17,6 +17,7 @@
     "db:generate": "pnpm --filter ./apps/api db:generate",
     "db:migrate": "pnpm --filter ./apps/api db:migrate",
     "lint:api": "pnpm --filter ./apps/api lint",
+    "lint:web": "pnpm --filter ./apps/web lint",
     "lint-staged": "lint-staged",
     "prepare": "husky",
     "test:api": "pnpm --filter ./apps/api test"
