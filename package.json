@@ -21,7 +21,10 @@
     "lint-staged": "lint-staged",
     "prepare": "husky",
     "test:api": "pnpm --filter ./apps/api test",
-    "test:web": "pnpm --filter ./apps/web test"
+    "test:web": "pnpm --filter ./apps/web test",
+    "docker:build": "docker compose build",
+    "docker:up": "docker compose up -d",
+    "docker:up:build": "docker compose up -d --build"
   },
   "devDependencies": {
     "husky": "^9.1.7",
