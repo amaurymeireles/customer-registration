@@ -1,3 +1,4 @@
 pnpm lint-staged
 pnpm lint:web
 pnpm test:api
+pnpm test:web
