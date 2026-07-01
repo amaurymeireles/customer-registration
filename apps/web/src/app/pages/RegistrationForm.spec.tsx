@@ -69,7 +69,9 @@ describe("RegistrationForm", () => {
     fireEvent.change(screen.getByLabelText(/E-mail/i), {
       target: { value: "maria@email.com" },
     });
-    fireEvent.click(screen.getByDisplayValue("AZUL"));
+    const combobox = screen.getByRole("combobox");
+    fireEvent.change(combobox, { target: { value: "Azu" } });
+    fireEvent.mouseDown(screen.getByRole("option", { name: /Azul/i }));
     fireEvent.change(screen.getByLabelText(/Observações/i), {
       target: { value: "Alguma observacao" },
     });

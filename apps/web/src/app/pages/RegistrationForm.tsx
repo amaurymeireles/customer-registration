@@ -2,6 +2,7 @@
 
 import { RAINBOW_COLORS } from "@/types";
 import ApiError from "../lib/components/ApiError";
+import ColorAutocomplete from "./components/ColorAutocomplete";
 import { useRegistrationForm } from "./hooks/useRegistrationForm";
 
 export default function RegistrationForm() {
@@ -116,47 +117,14 @@ export default function RegistrationForm() {
 
         {/* Favorite color */}
         <div className="field">
-          <label className="label">
+          <label htmlFor="color-autocomplete" className="label">
             Cor favorita <span className="required">*</span>
           </label>
-          <div
-            className={`color-grid ${errors.favoriteColor ? "color-grid--error" : ""}`}
-            role="radiogroup"
-            aria-label="Selecione sua cor favorita"
-          >
-            {RAINBOW_COLORS.map((color) => {
-              const checked = form.favoriteColor === color.value;
-              return (
-                <label
-                  key={color.value}
-                  className={`color-option ${checked ? "color-option--selected" : ""}`}
-                  style={
-                    checked
-                      ? {
-                          borderColor: color.hex,
-                          boxShadow: `0 0 0 3px ${color.hex}33`,
-                        }
-                      : {}
-                  }
-                >
-                  <input
-                    type="radio"
-                    name="favoriteColor"
-                    value={color.value}
-                    checked={checked}
-                    onChange={() => setField("favoriteColor", color.value)}
-                    className="sr-only"
-                  />
-                  <span
-                    className="color-swatch"
-                    style={{ background: color.hex }}
-                    aria-hidden="true"
-                  />
-                  <span className="color-label">{color.label}</span>
-                </label>
-              );
-            })}
-          </div>
+          <ColorAutocomplete
+            value={form.favoriteColor}
+            onChange={(v) => setField("favoriteColor", v)}
+            error={errors.favoriteColor}
+          />
           {selectedColor && (
             <p className="color-selected-msg">
               Cor selecionada:{" "}
