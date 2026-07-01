@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import "dotenv/config";
 import { NestFactory } from "@nestjs/core";
 import { UnprocessableEntityException, ValidationPipe } from "@nestjs/common";
 import { NestExpressApplication } from "@nestjs/platform-express";
