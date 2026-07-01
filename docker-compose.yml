@@ -2,7 +2,9 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: docker/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ""
     container_name: customer-registration-app
     restart: unless-stopped
     depends_on:

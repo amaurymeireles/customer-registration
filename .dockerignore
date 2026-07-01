@@ -1,15 +1,28 @@
-node_modules
+# Dependencies
 **/node_modules
+
+# Build output
+**/dist
+**/.next
+**/out
+
+# Git
 .git
-.next
-dist
-coverage
-apps/api/dist
-apps/web/out
-apps/web/.next
-**/*.tsbuildinfo
-apps/api/src/**/*.js
-apps/api/src/**/*.js.map
-apps/api/src/**/*.d.ts
-.env
+.gitignore
+
+# IDE
+.vscode
+.idea
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Environment
+**/.env
+**/.env.*
+
+# OS
 .DS_Store
+Thumbs.db
