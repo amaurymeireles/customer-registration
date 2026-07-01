@@ -3,3 +3,5 @@ dist
 coverage
 .env
 .DS_Store
+apps/web/.next
+apps/web/out
