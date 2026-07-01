@@ -1,14 +1,18 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import RegistrationForm from "./RegistrationForm";
-import { useRegistrationForm } from "@/app/hooks/useRegistrationForm";
+import { useRegistrationForm } from "./hooks/useRegistrationForm";
 
-jest.mock("@/app/hooks/useRegistrationForm", () => ({
+jest.mock("./hooks/useRegistrationForm", () => ({
   useRegistrationForm: jest.fn(),
 }));
 
-const mockedUseRegistrationForm = useRegistrationForm as jest.MockedFunction<typeof useRegistrationForm>;
+const mockedUseRegistrationForm = jest.mocked(useRegistrationForm);
 
-function createHookState(overrides = {}) {
+type HookState = ReturnType<typeof useRegistrationForm>;
+
+function createHookState(
+  overrides: Partial<HookState> = {}
+): HookState {
   return {
     errors: {},
     feedbackMessage: "",
@@ -24,10 +28,11 @@ function createHookState(overrides = {}) {
     handleSubmit: jest.fn(),
     selectedColor: undefined,
     setField: jest.fn(),
-    status: "idle" as const,
+    status: "idle",
     ...overrides,
   };
 }
+
 
 describe("RegistrationForm", () => {
   beforeEach(() => {

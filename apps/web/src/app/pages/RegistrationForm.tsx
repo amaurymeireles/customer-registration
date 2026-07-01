@@ -1,8 +1,8 @@
 "use client";
 
-import ApiError from "./ApiError";
-import { useRegistrationForm } from "@/app/hooks/useRegistrationForm";
 import { RAINBOW_COLORS } from "@/types";
+import ApiError from "../lib/components/ApiError";
+import { useRegistrationForm } from "./hooks/useRegistrationForm";
 
 export default function RegistrationForm() {
   const {

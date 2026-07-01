@@ -7,7 +7,7 @@ import {
   getEmailError,
   getFavoriteColorError,
   getFullNameError,
-} from "@/app/hooks/registrationFormValidation";
+} from "./registrationFormValidation";
 import {
   ApiResponse,
   RAINBOW_COLORS,
