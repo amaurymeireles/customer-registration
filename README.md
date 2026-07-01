@@ -60,6 +60,21 @@ pnpm lint:api
 pnpm lint:web
 ```
 
+## Scripts disponíveis
+
+| Comando | Descrição |
+|---------|-----------|
+| `pnpm dev:api` | Inicia a API em modo dev (porta 3000) |
+| `pnpm dev:web` | Inicia o frontend em modo dev (porta 3001) |
+| `pnpm test:api` | Testes do backend |
+| `pnpm test:web` | Testes do frontend |
+| `pnpm lint:api` | Lint do backend |
+| `pnpm lint:web` | Lint do frontend |
+| `pnpm docker:build` | Constrói a imagem Docker |
+| `pnpm docker:up` | Sobe todos os containers em background |
+| `pnpm docker:up:build` | Constrói e sobe em um comando |
+| `pnpm docker:db` | Sobe apenas o PostgreSQL |
+
 ## Docker
 
 A imagem combina frontend e backend em um único container. O NestJS serve tanto a API quanto os arquivos estáticos do Next.js (exportados como HTML estático) na porta 3000.
@@ -71,6 +86,14 @@ pnpm docker:up:build    # build + up em um comando
 ```
 
 Acesse em **http://localhost:3000**.
+
+### Apenas banco (desenvolvimento local)
+
+```bash
+pnpm docker:db    # docker compose up -d postgres
+```
+
+Sobe somente o PostgreSQL. Útil para rodar `pnpm dev:api` e `pnpm dev:web` manualmente.
 
 ### Arquitetura em produção
 
